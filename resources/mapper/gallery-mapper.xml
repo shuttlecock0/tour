@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+				"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.autocar.dao.GalleryDao">
+	<select id="count" resultType="int">
+		SELECT count(*) FROM gallery
+	</select>
+	<select id="getPage" resultType="Gallery">
+		SELECT G.*
+		FROM (
+		SELECT
+		ROW_NUMBER() OVER (ORDER BY gallery_id DESC) AS SEQ,
+		gallery_id, owner,
+		title, description, read_cnt,
+		reg_date, update_date
+		FROM gallery
+		) G
+		WHERE SEQ BETWEEN #{start} AND #{end}
+		ORDER BY gallery_id DESC
+	</select>
+	<select id="findById" parameterType="int" resultType="Gallery">
+		SELECT *
+		FROM gallery
+		WHERE gallery_id=#{galleryId}
+	</select>
+	<select id="findByOwner" parameterType="string"
+		resultType="Gallery">
+		SELECT * FROM gallery WHERE owner=#{owner}
+	</select>
+	<insert id="insert" parameterType="Gallery"
+		useGeneratedKeys="true" keyColumn="gallery_id" keyProperty="galleryId">
+		INSERT INTO
+		gallery (
+		gallery_id, owner, password, title, description
+		) VALUES (
+		GALLERY_SEQ.NEXTVAL, #{owner}, #{password}, #{title}, #{description}
+		)
+	</insert>
+	<update id="update" parameterType="Gallery">
+		UPDATE gallery SET
+		title = #{title},
+		description = #{description},
+		update_date = sysdate
+		WHERE gallery_id=#{galleryId}
+	</update>
+	<delete id="delete" parameterType="int">
+		DELETE FROM gallery WHERE gallery_id=#{galleryId}
+	</delete>
+</mapper>

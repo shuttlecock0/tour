@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+				"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.autocar.dao.ImageDao">
+	<insert id="insert" parameterType="Image"
+		useGeneratedKeys="true" keyColumn="image_id" keyProperty="imageId">
+		INSERT INTO
+		image(
+		image_id, gallery_id, original_name, file_size, mime_type
+		)VALUES(
+		IMAGE_SEQ.NEXTVAL, #{galleryId}, #{originalName}, #{fileSize},
+		#{mimeType}
+		)
+	</insert>
+	<select id="getGalleryImages" parameterType="int"
+		resultType="Image">
+		SELECT * FROM image WHERE gallery_id=#{galleryId}
+	</select>
+	<select id="getImage" parameterType="int" resultType="Image">
+		SELECT * FROM image WHERE image_id=#{imageId}
+	</select>
+	<delete id="delete" parameterType="int">
+		DELETE FROM image WHERE image_id=#{imageId}
+	</delete>
+	<delete id="deleteByGalleryId" parameterType="int">
+		DELETE FROM image WHERE gallery_id=#{galleryId}
+	</delete>
+</mapper>

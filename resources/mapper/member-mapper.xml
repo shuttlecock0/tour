@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+				"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.autocar.dao.MemberDao">
+	<select id="count"	resultType="int">
+		SELECT count(*) FROM member
+	</select>
+	
+	<select id="getPage" resultType="Member">
+		SELECT user_id, name, email, phone, reg_date
+		FROM(
+			SELECT ROW_NUMBER() OVER (ORDER BY reg_date DESC) AS SEQ,
+				user_id, name, email, phone, reg_date
+			FROM MEMBER
+		)
+		WHERE SEQ BETWEEN #{start} AND #{end}
+		ORDER BY reg_date DESC
+	</select>
+	
+	<select id="findById" parameterType="String" resultType="Member">
+		SELECT * from member
+		WHERE user_id=#{userId}
+	</select>
+	
+	<insert id="insert" parameterType="Member" useGeneratedKeys="true"
+		keyColumn = "user_id" keyProperty="userId">
+		insert into member
+		(user_id, password, name, salt, user_level, email, phone,
+			address, reg_date, update_date)
+		values(#{userId}, #{password}, #{name}, #{salt}, #{userLevel},
+			#{email}, #{phone}, #{address}, sysdate, sysdate)
+	</insert>
+	
+	<update id="update" parameterType="Member">
+		UPDATE member SET
+			email = #{email},
+			phone = #{phone},
+			address = #{address}
+		WHERE user_id=#{userId} and password=#{password}
+	</update>
+	
+	<update id="updateByAdmin" parameterType="Member">
+		UPDATE member SET
+			user_level = #{userLevel},
+			email = #{email},
+			phone = #{phone},
+			address = #{address}
+		WHERE user_id=#{userId}
+	</update>
+	
+	<delete id="delete">
+		DELETE FROM member
+		WHERE user_id=#{userId}
+	</delete>
+</mapper>
